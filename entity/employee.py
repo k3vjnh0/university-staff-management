@@ -7,19 +7,19 @@ class Employee:
     def get_full_name(self):
         return self.full_name
 
-    def set_full_name(self, full_name):
+    def set_full_name(self, full_name: str):
         self.full_name = full_name
 
     def get_salary_ratio(self):
         return self.salary_ratio
 
-    def set_salary_ratio(self, salary_ratio):
+    def set_salary_ratio(self, salary_ratio: float):
         self.salary_ratio = salary_ratio
 
     def get_allowance(self):
         return self.allowance
 
-    def set_allowance(self, allowance):
+    def set_allowance(self, allowance: float):
         self.allowance = allowance
 
     def get_salary(self):

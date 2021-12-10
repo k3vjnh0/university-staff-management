@@ -1,14 +1,14 @@
-import entity.employee
-import entity.EPosition
-import business.allowance_calculator
+import entity.employee as e
+import entity.EPosition as pos
+import business.allowance_calculator as calc
 
 
-class Staff(entity.employee.Employee):
+class Staff(e.Employee):
     def __init__(self):
         self.department = ""
         self.working_days = 0
-        self.position = entity.EPosition.Position
-        self.allowance = business.allowance_calculator.calculate_allowance(self)
+        self.position = pos.Position
+        self.allowance = calc.calculate_allowance(self)
 
     def get_department(self):
         return self.department
@@ -41,7 +41,7 @@ class Staff(entity.employee.Employee):
             + ","
             + self.get_department()
             + ","
-            + self.get_position()
+            + str(self.get_position())
             + ","
             + str(self.get_salary_ratio())
             + ","

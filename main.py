@@ -1,12 +1,12 @@
 from typing import List
 import os
-import entity.employee
-import entity.staff
-import entity.teacher
-import entity.EDegree
-import entity.EPosition
-import business.allowance_calculator
-import business.employee_management
+import entity.employee as e
+import entity.staff as s
+import entity.teacher as t
+import entity.EDegree as deg
+import entity.EPosition as pos
+import business.allowance_calculator as calc
+import business.employee_management as em
 
 
 def create_new_employee():
@@ -14,33 +14,33 @@ def create_new_employee():
         "Do you want to create a Staff or a Teacher (enter S for Staff, otherwise for Teacher)?"
     )
     if choice.lower() == "s":
-        s = entity.staff.Staff()
+        staff = s.Staff()
 
         name = input("Name: ")
-        s.set_full_name(name)
+        staff.set_full_name(name)
 
         while True:
             try:
                 salary_ratio = input("Salary ratio: ")
-                s.set_salary_ratio(float(salary_ratio))
+                staff.set_salary_ratio(float(salary_ratio))
                 break
             except ValueError:
                 print("Your input is invalid. Number is recommended.")
 
         faculty = input("Department: ")
-        s.set_department(faculty)
+        staff.set_department(faculty)
 
         while True:
             try:
                 degree = input("Position (1=HEAD; 2=VICE HEAD; 3=STAFF): ")
                 if degree == "1":
-                    s.set_position(entity.EPosition.Position(1).name)
+                    staff.set_position(pos.Position(1).name)
                     break
                 elif degree == "2":
-                    s.set_position(entity.EPosition.Position(2).name)
+                    staff.set_position(pos.Position(2).name)
                     break
                 elif degree == "3":
-                    s.set_position(entity.EPosition.Position(3).name)
+                    staff.set_position(pos.Position(3).name)
                     break
                 else:
                     continue
@@ -49,42 +49,42 @@ def create_new_employee():
 
         while True:
             try:
-                teaching_hours = input("Number of working days: ")
-                s.set_working_days(float(teaching_hours))
+                working_days = input("Number of working days: ")
+                staff.set_working_days(float(working_days))
                 break
             except ValueError:
                 print("Your input is invalid. Number is recommended.")
 
-        return s
+        return staff
 
     else:
-        t = entity.teacher.Teacher()
+        teacher = t.Teacher()
 
         name = input("Name: ")
-        t.set_full_name(name)
+        teacher.set_full_name(name)
 
         while True:
             try:
                 salary_ratio = input("Salary ratio: ")
-                t.set_salary_ratio(float(salary_ratio))
+                teacher.set_salary_ratio(float(salary_ratio))
                 break
             except ValueError:
                 print("Your input is invalid. Number is recommended.")
 
         faculty = input("Faculty: ")
-        t.set_faculty(faculty)
+        teacher.set_faculty(faculty)
 
         while True:
             try:
                 degree = input("Degree (1=BACHELOR; 2=MASTER; 3=DOCTOR): ")
                 if degree == "1":
-                    t.set_degree(entity.EDegree.Degree(1).name)
+                    teacher.set_degree(deg.Degree(1).name)
                     break
                 elif degree == "2":
-                    t.set_degree(entity.EDegree.Degree(2).name)
+                    teacher.set_degree(deg.Degree(2).name)
                     break
                 elif degree == "3":
-                    t.set_degree(entity.EDegree.Degree(3).name)
+                    teacher.set_degree(deg.Degree(3).name)
                     break
                 else:
                     continue
@@ -94,15 +94,15 @@ def create_new_employee():
         while True:
             try:
                 teaching_hours = input("Number of teaching hours: ")
-                t.set_teaching_hours(float(teaching_hours))
+                teacher.set_teaching_hours(float(teaching_hours))
                 break
             except ValueError:
                 print("Your input is invalid. Number is recommended.")
 
-        return t
+        return teacher
 
 
-def display(lst_emp: List[entity.employee.Employee]):
+def display(lst_emp: List[e.Employee]):
     print(
         "+---------------------+----------------+-----------+-----------+----------------+----------------+----------------+"
     )
@@ -112,7 +112,7 @@ def display(lst_emp: List[entity.employee.Employee]):
             "Name",
             "Fac/Dept",
             "Deg/Pos",
-            "Sal.Rat.",
+            "Sal.Ratio",
             "Allowance ($)",
             "T.Hours/W.Days",
             "Salary ($)",
@@ -130,7 +130,7 @@ def display(lst_emp: List[entity.employee.Employee]):
         salary = emp.get_salary()
         total_salary += salary
 
-        if isinstance(emp, entity.staff.Staff):
+        if isinstance(emp, s.Staff):
             department = emp.get_department()
             position = emp.get_position()
             working_days = emp.get_working_days()
@@ -147,7 +147,7 @@ def display(lst_emp: List[entity.employee.Employee]):
                 )
             )
 
-        if isinstance(emp, entity.teacher.Teacher):
+        if isinstance(emp, t.Teacher):
             faculty = emp.get_faculty()
             degree = emp.get_degree()
             teaching_hours = emp.get_teaching_hours()
@@ -174,7 +174,7 @@ def display(lst_emp: List[entity.employee.Employee]):
 
 
 def main():
-    emp_man = business.employee_management.Employee_Management()
+    emp_man = em.Employee_Management()
     emp_man.load("data.csv")
 
     while True:
@@ -190,7 +190,7 @@ def main():
         # Add staff/teacher
         if choice == "1":
             emp = create_new_employee()
-            emp.set_allowance(business.allowance_calculator.calculate_allowance(emp))
+            emp.set_allowance(calc.calculate_allowance(emp))
             emp_man.add_employee(emp)
             emp_man.save(emp, "data.csv")
 

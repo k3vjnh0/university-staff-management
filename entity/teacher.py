@@ -1,14 +1,14 @@
-import entity.employee
-import entity.EDegree
-import business.allowance_calculator
+import entity.employee as e
+import entity.EDegree as deg
+import business.allowance_calculator as calc
 
 
-class Teacher(entity.employee.Employee):
+class Teacher(e.Employee):
     def __init__(self):
         self.faculty = ""
-        self.degree = entity.EDegree.Degree
         self.teaching_hours = 0
-        self.allowance = business.allowance_calculator.calculate_allowance(self)
+        self.degree = deg.Degree
+        self.allowance = calc.calculate_allowance(self)
 
     def get_faculty(self):
         return self.faculty
@@ -41,7 +41,7 @@ class Teacher(entity.employee.Employee):
             + ","
             + self.get_faculty()
             + ","
-            + self.get_degree()
+            + str(self.get_degree())
             + ","
             + str(self.get_salary_ratio())
             + ","

@@ -1,9 +1,12 @@
-from human-resources.entity.staff import Staff
-from human-resources.entity.teacher import Teacher
-from human-resources.entity.EDegree import Degree
-from human-resources.entity.EPosition import Position
-from human-resources.business.allowance_calculator import calculate_allowance
-from human-resources.business.employee_management import Employee_Management
+from typing import List
+import os
+import entity.employee
+import entity.staff
+import entity.teacher
+import entity.EDegree
+import entity.EPosition
+import business.allowance_calculator
+import business.employee_management
 
 
 def create_new_employee():
@@ -11,7 +14,7 @@ def create_new_employee():
         "Do you want to create a Staff or a Teacher (enter S for Staff, otherwise for Teacher)?"
     )
     if choice.lower() == "s":
-        s = Staff()
+        s = entity.staff.Staff()
 
         name = input("Name: ")
         s.set_full_name(name)
@@ -31,13 +34,13 @@ def create_new_employee():
             try:
                 degree = input("Position (1=HEAD; 2=VICE HEAD; 3=STAFF): ")
                 if degree == "1":
-                    s.set_position(Position.HEAD)
+                    s.set_position(entity.EPosition.Position(1).name)
                     break
                 elif degree == "2":
-                    s.set_position(Position.VICE_HEAD)
+                    s.set_position(entity.EPosition.Position(2).name)
                     break
                 elif degree == "3":
-                    s.set_position(Position.STAFF)
+                    s.set_position(entity.EPosition.Position(3).name)
                     break
                 else:
                     continue
@@ -55,7 +58,7 @@ def create_new_employee():
         return s
 
     else:
-        t = Teacher()
+        t = entity.teacher.Teacher()
 
         name = input("Name: ")
         t.set_full_name(name)
@@ -75,13 +78,13 @@ def create_new_employee():
             try:
                 degree = input("Degree (1=BACHELOR; 2=MASTER; 3=DOCTOR): ")
                 if degree == "1":
-                    t.set_degree(Degree.BACHELOR)
+                    t.set_degree(entity.EDegree.Degree(1).name)
                     break
                 elif degree == "2":
-                    t.set_degree(Degree.MASTER)
+                    t.set_degree(entity.EDegree.Degree(2).name)
                     break
                 elif degree == "3":
-                    t.set_degree(Degree.DOCTOR)
+                    t.set_degree(entity.EDegree.Degree(3).name)
                     break
                 else:
                     continue
@@ -99,12 +102,12 @@ def create_new_employee():
         return t
 
 
-def display(lst_emp):
+def display(lst_emp: List[entity.employee.Employee]):
     print(
-        "------------------------------------------------------------------------------------------------------------"
+        "+---------------------+----------------+-----------+-----------+----------------+----------------+----------------+"
     )
     print(
-        "|%-20s|%-15s|%-10s|%-10s|%-15s|%-15s|%-15s|"
+        "| %-20s| %-15s| %-10s| %-10s| %-15s| %-15s| %-15s|"
         % (
             "Name",
             "Fac/Dept",
@@ -116,7 +119,7 @@ def display(lst_emp):
         )
     )
     print(
-        "------------------------------------------------------------------------------------------------------------"
+        "+---------------------+----------------+-----------+-----------+----------------+----------------+----------------+"
     )
 
     total_salary = 0
@@ -127,13 +130,12 @@ def display(lst_emp):
         salary = emp.get_salary()
         total_salary += salary
 
-        if isinstance(emp, Staff):
-            emp = Staff(emp)
+        if isinstance(emp, entity.staff.Staff):
             department = emp.get_department()
             position = emp.get_position()
             working_days = emp.get_working_days()
             print(
-                "|%-20s|%-15s|%-10s|%-10.2f|%-15.2f|%-15.2f|%-15.2f|"
+                "| %-20s| %-15s| %-10s| %-10.2f| %-15.2f| %-15.2f| %-15.2f|"
                 % (
                     name,
                     department,
@@ -145,13 +147,12 @@ def display(lst_emp):
                 )
             )
 
-        if isinstance(emp, Teacher):
-            emp = Teacher(emp)
+        if isinstance(emp, entity.teacher.Teacher):
             faculty = emp.get_faculty()
             degree = emp.get_degree()
             teaching_hours = emp.get_teaching_hours()
             print(
-                "|%-20s|%-15s|%-10s|%-10.2f|%-15.2f|%-15.2f|%-15.2f|"
+                "| %-20s| %-15s| %-10s| %-10.2f| %-15.2f| %-15.2f| %-15.2f|"
                 % (
                     name,
                     faculty,
@@ -164,19 +165,20 @@ def display(lst_emp):
             )
 
     print(
-        "------------------------------------------------------------------------------------------------------------"
+        "+---------------------+----------------+-----------+-----------+----------------+----------------+----------------+"
     )
-    print("|%-90s|%-15.2f|" % ("TOTAL", total_salary))
+    print("| %-95s| %-15.2f|" % ("TOTAL", total_salary))
     print(
-        "------------------------------------------------------------------------------------------------------------"
+        "+------------------------------------------------------------------------------------------------+----------------+"
     )
 
 
 def main():
-    emp_man = Employee_Management()
+    emp_man = business.employee_management.Employee_Management()
     emp_man.load("data.csv")
 
     while True:
+        os.system("clear")
         print("University Staff Management 1.0")
         print("\t1.Add staff")
         print("\t2.Search staff by name")
@@ -188,7 +190,7 @@ def main():
         # Add staff/teacher
         if choice == "1":
             emp = create_new_employee()
-            emp.set_allowance(calculate_allowance(emp))
+            emp.set_allowance(business.allowance_calculator.calculate_allowance(emp))
             emp_man.add_employee(emp)
             emp_man.save(emp, "data.csv")
 
@@ -197,20 +199,17 @@ def main():
             name = input("\tEnter name to search: ")
             result = emp_man.search_by_name(name)
             display(result)
-            break
 
         # Search by dept/fac
         elif choice == "3":
             dept = input("\tEnter dept/fac to search: ")
             result = emp_man.search_by_dept(dept)
             display(result)
-            break
 
         # Display staff/teacher
         elif choice == "4":
             lst_emp = emp_man.list_all()
             display(lst_emp)
-            break
 
         # Exit
         elif choice == "5":
@@ -218,6 +217,8 @@ def main():
 
         else:
             continue
+
+        input("Press Enter to continue...")
 
 
 if __name__ == "__main__":
